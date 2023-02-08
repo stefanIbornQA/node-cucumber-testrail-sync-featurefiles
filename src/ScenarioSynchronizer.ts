@@ -387,7 +387,7 @@ export class ScenarioSynchronizer {
         let testcases: any[] = [];
         if (this.config.testrail.filters.run_id) {
             testcases = await this.testrailClient.getTests(this.config.testrail.filters.run_id);
-            this.debug(`Found #${testcases.length} cases on TestRail for run_id = ${this.config.testrail.filters.run_id}`);
+            this.debug(`Found #${testcases.tests.length} cases on TestRail for run_id = ${this.config.testrail.filters.run_id}`);
         // all runs in a test plan
         } else {
             let uniqueCaseIds: number[] = [];
@@ -403,7 +403,7 @@ export class ScenarioSynchronizer {
             }
         }
 
-        return testcases.filter((t: any) => !statuses || statuses.indexOf(t.status_id) !== -1);
+        return testcases.tests.filter((t: any) => !statuses || statuses.indexOf(t.status_id) !== -1);
     }
 
     /**
