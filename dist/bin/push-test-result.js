@@ -26,7 +26,7 @@ if (program.status === 'blocked') {
 else if (program.status === 'failed') {
     status = index_1.ResultSynchronizer.FAILED_STATUS_ID;
 }
-const config = index_1.readConfig();
+const config = (0, index_1.readConfig)();
 index_1.ResultSynchronizer.pushTestResult(config, Number(program.id), status)
     .then(() => process.exit(0))
     .catch(() => process.exit(1));

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GherkinFormatter = void 0;
 class GherkinFormatter {
     /**
      * Verify that each line is valid gherkin syntax

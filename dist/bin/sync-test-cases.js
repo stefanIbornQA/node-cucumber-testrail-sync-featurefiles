@@ -15,7 +15,7 @@ program
     .option('--push', 'Push test cases from the local filesystem to TestRail')
     .parse(process.argv);
 const sync = new index_1.ScenarioSynchronizer();
-const config = index_1.readConfig();
+const config = (0, index_1.readConfig)();
 config.verify = program.verify || config.verify || false;
 config.findUnused = program.unused || config.findUnused || false;
 config.silent = program.silent || config.silent || false;

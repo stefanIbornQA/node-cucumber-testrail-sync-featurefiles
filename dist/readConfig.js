@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.readConfig = void 0;
 const path = require("path");
 const _ = require("lodash");
-exports.readConfig = () => {
+const readConfig = () => {
     const dir = process.cwd();
     const defaultOptions = {
         featuresDir: path.resolve(dir, 'features'),
@@ -14,4 +15,5 @@ exports.readConfig = () => {
     }
     return _.defaultsDeep(options, defaultOptions);
 };
+exports.readConfig = readConfig;
 //# sourceMappingURL=readConfig.js.map

@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ResultSynchronizer = void 0;
 const TestrailApiClient = require("testrail-api");
 const lodash_1 = require("lodash");
 class ResultSynchronizer {
@@ -80,7 +82,7 @@ class ResultSynchronizer {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.config.pushResults === true) {
                 for (const runId of Object.keys(this.testruns)) {
-                    const results = lodash_1.pick(this.testresults, this.testruns[runId].cases);
+                    const results = (0, lodash_1.pick)(this.testresults, this.testruns[runId].cases);
                     const data = Object.keys(results).map((k) => results[k]);
                     if (data.length > 0) {
                         yield this.testrailClient.addResultsForCases(Number(runId), { results: data });
@@ -154,8 +156,8 @@ class ResultSynchronizer {
         });
     }
 }
+exports.ResultSynchronizer = ResultSynchronizer;
 ResultSynchronizer.PASSED_STATUS_ID = 1;
 ResultSynchronizer.BLOCKED_STATUS_ID = 2;
 ResultSynchronizer.FAILED_STATUS_ID = 5;
-exports.ResultSynchronizer = ResultSynchronizer;
 //# sourceMappingURL=ResultSynchronizer.js.map

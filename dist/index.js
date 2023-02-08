@@ -1,14 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.legacyInstall = exports.install = exports.readConfig = exports.ResultSynchronizer = exports.ScenarioSynchronizer = void 0;
 // tslint:disable-next-line:no-reference
 /// <reference path="../typings.d.ts" />
 var ScenarioSynchronizer_1 = require("./ScenarioSynchronizer");
-exports.ScenarioSynchronizer = ScenarioSynchronizer_1.ScenarioSynchronizer;
+Object.defineProperty(exports, "ScenarioSynchronizer", { enumerable: true, get: function () { return ScenarioSynchronizer_1.ScenarioSynchronizer; } });
 var ResultSynchronizer_1 = require("./ResultSynchronizer");
-exports.ResultSynchronizer = ResultSynchronizer_1.ResultSynchronizer;
+Object.defineProperty(exports, "ResultSynchronizer", { enumerable: true, get: function () { return ResultSynchronizer_1.ResultSynchronizer; } });
 var readConfig_1 = require("./readConfig");
-exports.readConfig = readConfig_1.readConfig;
+Object.defineProperty(exports, "readConfig", { enumerable: true, get: function () { return readConfig_1.readConfig; } });
 var install_1 = require("./install");
-exports.install = install_1.install;
-exports.legacyInstall = install_1.legacyInstall;
+Object.defineProperty(exports, "install", { enumerable: true, get: function () { return install_1.install; } });
+Object.defineProperty(exports, "legacyInstall", { enumerable: true, get: function () { return install_1.legacyInstall; } });
 //# sourceMappingURL=index.js.map

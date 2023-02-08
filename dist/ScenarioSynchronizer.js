@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ScenarioSynchronizer = void 0;
 const TestrailApiClient = require("testrail-api");
 const path = require("path");
 const chalk = require("chalk");
@@ -17,7 +19,7 @@ const inquirer = require("inquirer");
 const _ = require("lodash");
 const Joi = require("joi");
 const walk = require("walkdir");
-const uniquefilename = require("uniquefilename");
+const uniquefilename = require('unique-filename');
 const mkdirp = require("mkdirp");
 const Handlebars = require("handlebars");
 const GherkinFormatter_1 = require("./GherkinFormatter");
@@ -336,14 +338,14 @@ class ScenarioSynchronizer {
                 for (const planentry of this.plan.entries) {
                     for (const run of planentry.runs) {
                         const testcasesOfRun = yield this.testrailClient.getTests(run.id);
-                        this.debug(`Found #${testcasesOfRun.length} cases on TestRail for run_id = ${run.id}`);
+                        this.debug(`Found #${testcases.length} cases on TestRail for run_id = ${this.config.testrail.filters.run_id}`);
                         const newTestcases = testcasesOfRun.filter((t) => uniqueCaseIds.indexOf(t.case_id) === -1);
                         testcases = testcases.concat(newTestcases);
                         uniqueCaseIds = uniqueCaseIds.concat(newTestcases.map((t) => t.case_id));
                     }
                 }
             }
-            return testcases.filter((t) => !statuses || statuses.indexOf(t.custom_status) !== -1);
+            return testcases.filter((t) => !statuses || statuses.indexOf(t.status_id) !== -1);
         });
     }
     /**
@@ -421,9 +423,12 @@ class ScenarioSynchronizer {
         if (gherkin.filter((line) => line.indexOf('Examples') !== -1).length > 0) {
             scenarioType = 'Scenario Outline';
         }
-        let content = 'Feature: ' + this.getLastSectionName(testcase.case_id) + '\n';
+        var temp = testcase.title.split(/(?=[A-Z])/);
+        let content = 'Feature: ' + temp[0].charAt(0).toUpperCase() + temp[0].slice(1) + " " + temp[1].match(/[A-Z][a-z]+|[0-9]+/g).join(" ") + '\n';
+        content += this.config.indent + testcase.custom_preconds + '\n';
+        content += this.config.indent + '\n';
         content += this.config.indent + '@tcid:' + testcase.case_id + '\n';
-        content += this.config.indent + scenarioType + ': ' + testcase.title + '\n' + this.config.indent + this.config.indent;
+        content += this.config.indent + scenarioType + ': ' + "C" + testcase.case_id + " " + testcase.title + '\n' + this.config.indent + this.config.indent;
         content += gherkin.join('\n' + this.config.indent + this.config.indent);
         return content;
     }
@@ -881,7 +886,7 @@ class ScenarioSynchronizer {
         return __awaiter(this, void 0, void 0, function* () {
             const basename = this.slugify(testcase.title);
             const exists = (this.testFiles[testcase.case_id] !== undefined);
-            let featurePath = path.resolve(this.config.featuresDir + '/' + relativePath, basename + '.feature');
+            let featurePath = path.resolve(this.config.featuresDir + '/' + relativePath, testcase.title + '.feature');
             const stepDefinitionsExtension = this.config.stepDefinitionsTemplate ?
                 path.extname(this.config.stepDefinitionsTemplate).substr(1) : '';
             let stepDefinitionsPath = path.resolve(this.config.stepDefinitionsDir + '/' + relativePath, basename + '.' + stepDefinitionsExtension);

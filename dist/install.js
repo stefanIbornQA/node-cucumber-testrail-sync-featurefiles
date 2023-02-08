@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.install = exports.legacyInstall = void 0;
 const readConfig_1 = require("./readConfig");
 const ResultSynchronizer_1 = require("./ResultSynchronizer");
 // tslint:disable-next-line:variable-name
 const installHandlers = (registerHandler, After) => {
-    const testResultSync = new ResultSynchronizer_1.ResultSynchronizer(readConfig_1.readConfig());
+    const testResultSync = new ResultSynchronizer_1.ResultSynchronizer((0, readConfig_1.readConfig)());
     registerHandler('BeforeFeatures', (features, callback) => {
         testResultSync.readRemoteTestRuns(callback);
     });
@@ -34,13 +35,15 @@ const installHandlers = (registerHandler, After) => {
         testResultSync.pushTestResults(callback);
     });
 };
-exports.legacyInstall = (cucumber) => {
+const legacyInstall = (cucumber) => {
     installHandlers(cucumber.registerHandler, cucumber.After);
 };
-exports.install = (cucumber) => {
-    const testResultSync = new ResultSynchronizer_1.ResultSynchronizer(readConfig_1.readConfig());
+exports.legacyInstall = legacyInstall;
+const install = (cucumber) => {
+    const testResultSync = new ResultSynchronizer_1.ResultSynchronizer((0, readConfig_1.readConfig)());
     cucumber.defineSupportCode((obj) => {
         installHandlers(obj.registerHandler, obj.After);
     });
 };
+exports.install = install;
 //# sourceMappingURL=install.js.map

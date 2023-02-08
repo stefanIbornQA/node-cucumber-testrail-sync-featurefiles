@@ -7,7 +7,7 @@ import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 import * as Joi from 'joi';
 import * as walk from 'walkdir';
-import * as uniquefilename from 'uniquefilename';
+const uniquefilename = require('unique-filename');
 import * as mkdirp from 'mkdirp';
 import * as Handlebars from 'handlebars';
 import {ScenarioSynchronizerOptions} from '../index.d';
@@ -56,7 +56,6 @@ export class ScenarioSynchronizer {
         const defaultConfig = {
             indent: '  '
         };
-
         const schema = Joi.object().keys(<any> {
             testrail: {
                 host: Joi.string().required(),
@@ -395,7 +394,7 @@ export class ScenarioSynchronizer {
             for (const planentry of this.plan.entries) {
                 for (const run of planentry.runs) {
                     const testcasesOfRun = await this.testrailClient.getTests(run.id);
-                    this.debug(`Found #${testcasesOfRun.length} cases on TestRail for run_id = ${run.id}`);
+                    this.debug(`Found #${testcases.length} cases on TestRail for run_id = ${this.config.testrail.filters.run_id}`);
 
                     const newTestcases = testcasesOfRun.filter((t: any) => uniqueCaseIds.indexOf(t.case_id) === -1);
                     testcases = testcases.concat(newTestcases);
@@ -404,7 +403,7 @@ export class ScenarioSynchronizer {
             }
         }
 
-        return testcases.filter((t: any) => !statuses || statuses.indexOf(t.custom_status) !== -1);
+        return testcases.filter((t: any) => !statuses || statuses.indexOf(t.status_id) !== -1);
     }
 
     /**
@@ -483,15 +482,16 @@ export class ScenarioSynchronizer {
      */
     protected getFeatureFileContent(testcase: any, gherkin: string[]): string {
         let scenarioType = 'Scenario';
-        if (gherkin.filter((line: string) => line.indexOf('Examples') !== -1).length > 0) {
+        if (gherkin.filter((line) => line.indexOf('Examples') !== -1).length > 0) {
             scenarioType = 'Scenario Outline';
         }
-
-        let content = 'Feature: ' + this.getLastSectionName(testcase.case_id) + '\n';
+        var temp =testcase.title.split(/(?=[A-Z])/);
+        let content = 'Feature: '+temp[0].charAt(0).toUpperCase()+temp[0].slice(1)+" "+ temp[1].match(/[A-Z][a-z]+|[0-9]+/g).join(" ") + '\n';  
+        content += this.config.indent + testcase.custom_preconds +'\n';
+        content += this.config.indent + '\n';
         content += this.config.indent + '@tcid:' + testcase.case_id + '\n';
-        content += this.config.indent + scenarioType + ': ' + testcase.title + '\n' + this.config.indent + this.config.indent;
+        content += this.config.indent + scenarioType + ': ' + "C"+ testcase.case_id+ " "+testcase.title + '\n' + this.config.indent + this.config.indent;
         content += gherkin.join('\n' + this.config.indent + this.config.indent);
-
         return content;
     }
 
@@ -1027,7 +1027,7 @@ export class ScenarioSynchronizer {
         const basename = this.slugify(testcase.title);
         const exists = (this.testFiles[testcase.case_id] !== undefined);
 
-        let featurePath = path.resolve(this.config.featuresDir + '/' + relativePath, basename + '.feature');
+        let featurePath = path.resolve(this.config.featuresDir + '/' + relativePath, testcase.title + '.feature'); 
         const stepDefinitionsExtension = this.config.stepDefinitionsTemplate ?
             path.extname(this.config.stepDefinitionsTemplate).substr(1) : '';
         let stepDefinitionsPath = path.resolve(
