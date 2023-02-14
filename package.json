@@ -1,6 +1,6 @@
 {
   "name": "node-cucumber-testrail-sync-featurefiles",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Synchronize test cases from TestRail & pushes Cucumber results",
   "bin": {
     "cucumber-testrail-sync": "./dist/bin/sync-test-cases.js",

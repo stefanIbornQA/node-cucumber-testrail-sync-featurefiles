@@ -7,7 +7,7 @@ import * as inquirer from 'inquirer';
 import * as _ from 'lodash';
 import * as Joi from 'joi';
 import * as walk from 'walkdir';
-const uniquefilename = require('unique-filename');
+const uniquefilename = require('uniquefilename');
 import * as mkdirp from 'mkdirp';
 import * as Handlebars from 'handlebars';
 import {ScenarioSynchronizerOptions} from '../index.d';
